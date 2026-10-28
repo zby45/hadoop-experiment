@@ -1,23 +1,26 @@
-﻿# Hadoop Experiment Code
+# Hadoop MapReduce 倒排索引实验
 
-山东大学 大数据管理与分析 实验一代码
+## 实验内容
+基于 Hadoop 3.x 伪分布式环境，实现英文文档倒排索引的构建，完成分词、停词过滤、词频统计全流程，输出格式符合课程实验要求。
 
-## 环境
-- Ubuntu 22.04 64位
-- Hadoop 3.3.6 (伪分布式)
-- OpenJDK 1.8
+## 文件说明
+| 文件名 | 作用 |
+|--------|------|
+| `InvertedIndex.java` | MapReduce 核心代码，包含 Mapper 分词过滤、Reducer 聚合统计完整实现 |
+| `stopwords.txt` | 英文停词表，用于过滤无意义高频功能词 |
 
-## 代码说明
-| 文件 | 功能 |
-|---|---|
-| MergeDedup.java | 文件合并与去重 |
-| SortMR.java | 整数升序排序（输出位次） |
-| GrandRelation.java | 祖孙关系挖掘 |
-
-## 编译运行
+## 运行方式
 ```bash
-export HADOOP_CLASSPATH=$JAVA_HOME/lib/tools.jar
-hadoop com.sun.tools.javac.Main *.java
-jar cf experiment.jar *.class
-hadoop jar experiment.jar MergeDedup /input /output
+# 先编译打包
+javac -cp $(hadoop classpath) InvertedIndex.java
+jar -cvf inverted-index.jar *.class
+
+# 提交MapReduce任务
+hadoop jar inverted-index.jar InvertedIndex <HDFS输入路径> <HDFS输出路径> <停词表HDFS路径>
+```
+
+## 输出格式
+单词按字母序排列，每个单词对应出现的文档及词频，最后统计总出现次数：
+```
+word  <doc1.txt,2>;<doc3.txt,1>;<total,3>.
 ```
